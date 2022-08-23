@@ -7,6 +7,6 @@ export class TestService {
   async ConsoleTime() {
     // console.log(time)
     const time = new Date().toISOString()
-    console.log('Jenkins Test: ' + time)
+    console.log('Jenkins Testing: ' + time)
   }
 }
