@@ -35,9 +35,7 @@ pipeline {
 
        stage('Finish') {
             steps{
-              script{
-                kubernetesDeploy(configs: "jenkins_deploy.yaml", kubeconfigId: "KubeConfig")
-              }
+                sh "echo 'The end'"
             }
         }
     }
