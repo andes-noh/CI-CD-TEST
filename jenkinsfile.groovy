@@ -5,6 +5,7 @@ pipeline {
         GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
         dockerHubRegistry = 'andesnoh/sample'
         dockerHubRegistryCredential = 'dockerhub'
+        dockerImage = ''
     }
 
     tools {
@@ -20,16 +21,18 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "docker build -t ${dockerHubRegistry}:latest"
+              scripts {
+                dockerImage = docker.build("${dockerHubRegistry}")
+              }
             }
         }
 
         stage('Push') {
             steps {
-              docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
-                sh "docker push ${dockerHubRegistry}:latest"
-
-                sleep 10
+              scripts {
+                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
+                dockerImage.push('latest')
+              }
             }
         }
 
