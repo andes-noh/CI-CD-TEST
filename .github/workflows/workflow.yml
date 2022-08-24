@@ -8,6 +8,9 @@ on:
   push:
     branches: [main]
 
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/node-sample
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   node-sample-build:
@@ -35,4 +38,5 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ github.repository_owner }}/node-sample:${{ steps.image.output.version }}
+        tags: |
+          ${{ env.IMAGE_NAME }}:${{ steps.image.output.version }}
