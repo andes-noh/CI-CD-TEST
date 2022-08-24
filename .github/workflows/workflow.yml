@@ -30,7 +30,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.TEST }}
       # 애플리케이션을 이미지로 build 하고 push합니다.
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
