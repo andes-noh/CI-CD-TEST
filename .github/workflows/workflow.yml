@@ -35,4 +35,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ github.repository_owner }}/test-app:${{ steps.image.output.version }}
+        tags: ghcr.io/${{ github.repository_owner }}/node-sample:${{ steps.image.output.version }}
