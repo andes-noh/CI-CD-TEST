@@ -24,6 +24,11 @@ jobs:
           VERSION=$(echo ${{ github.sha }} | cut -c1-8)
           echo VERSION=$VERSION
           echo "::set-output name=version::$VERSION"
+
+      # docker buildx 설치
+      - name: Docker Setup Buildx
+        uses: docker/setup-buildx-action@v1.6.0
+
       # Container Registry에 로그인합니다.
       - name: Login to GitHub Packages Container Registry
         uses: docker/login-action@v1
@@ -31,6 +36,20 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.TEST }}
+
+      # # secrets를 이용해 Docker Hub 로그인
+      # - name: Docker Login
+      #   uses: docker/login-action@v1.10.0
+      #   with:
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_TOKEN }}
+
+      # # buildx 명령어로 amd64, arm64, arm/v6, arm/v7 아키텍처 이미지 빌드 및
+      # - name: Build Image
+      #   working-directory: python
+      #   run: |
+      #     docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 -t inerplat/github-action-example:${{ steps.vars.outputs.tag }} --push .
+
       # 애플리케이션을 이미지로 build 하고 push합니다.
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
