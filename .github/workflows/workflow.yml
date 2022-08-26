@@ -27,7 +27,7 @@ jobs:
 
       # docker buildx 설치
       - name: Docker Setup Buildx
-        uses: docker/setup-buildx-action@v1.6.0
+        uses: docker/setup-buildx-action@v1
 
       # Container Registry에 로그인합니다.
       - name: Login to GitHub Packages Container Registry
@@ -44,19 +44,21 @@ jobs:
       #     username: ${{ secrets.DOCKER_USERNAME }}
       #     password: ${{ secrets.DOCKER_TOKEN }}
 
-      # buildx 명령어로 amd64, arm64, arm/v6, arm/v7 아키텍처 이미지 빌드 및
-      - name: Build Image
-        # uses: docker/setup-buildx-action@v1.6.0
-        run: |
-          docker buildx build --platform linux/amd64 -t ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }} --push .
+      # # buildx 명령어로 amd64 아키텍처 이미지 빌드 및 푸쉬
+      # - name: Build Image
+      #   # uses: docker/setup-buildx-action@v1.6.0
+      #   run: |
+      #     docker buildx build --platform linux/amd64 -t ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }} --push .
 
-      # # 애플리케이션을 이미지로 build 하고 push합니다.
-      # - name: Push to GitHub Packages
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     push: true
-      #     tags: |
-      #       ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
+      # 애플리케이션을 이미지로 build 하고 push합니다.
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
+          cache-from: type=gha #gha =  Guthub Actions Cache
+          cache-to: type=gha,mode=max
 
   deploy:
     runs-on: ubuntu-latest
