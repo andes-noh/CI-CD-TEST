@@ -47,12 +47,29 @@ pipeline {
         //     }
         // }
 
-       stage('Finish') {
-            steps{
+        stage('Clean') {
+            steps {
                 sh "echo 'The end'"
+                sh "docker rmi ${dockerHubRegistry}:latest"
                 sh "docker logout"
             }
         }
+
+        stage('Deploy to kubernetes'){
+            steps{
+              script{
+                kubernetesDeploy(configs: "test.yaml", kubeconfigId: "kubeconfig")
+            }
+        }
+    }
+
+
+        // docker run
+        // stage('Docker Run'){
+        //     steps {
+        //         sh "docker run -d -p 3000:3000 --rm --name MySampleApp ${dockerHubRegistry}:latest"
+        //     }
+        // }
     }
 
 }

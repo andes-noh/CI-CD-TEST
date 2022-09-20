@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: back
+    app.kubernetes.io/name: test
+    app.kubernetes.io/part-of: test
+  name: test
+  namespace: jenkins
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: back
+      app.kubernetes.io/name: test
+      app.kubernetes.io/part-of: test
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: back
+        app.kubernetes.io/name: test
+        app.kubernetes.io/part-of: test
+    spec:
+      containers:
+        - image: andesnoh/sample:latest
+          name: app
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: "0.2"
+              memory: 128M
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: back
+    app.kubernetes.io/name: test
+    app.kubernetes.io/part-of: test
+  name: test
+  namespace: jenkins
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app.kubernetes.io/component: back
+    app.kubernetes.io/name: test
+    app.kubernetes.io/part-of: test
