@@ -4,7 +4,7 @@ pipeline {
     environment {
         GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
         dockerHubRegistry = 'andesnoh/sample'
-        dockerHubRegistryCredential = 'dockerhub'
+        dockerHubRegistryCredential = credential('dockerhub')
     }
 
     tools {
@@ -21,6 +21,12 @@ pipeline {
         stage('Build') {
             steps {
                 sh "docker build -t ${dockerHubRegistry}:latest ."
+            }
+        }
+
+        stage('login'){
+            steps {
+              sh sh 'echo $dockerHubRegistryCredential_PSW | docker login -u $dockerHubRegistryCredential_USR --password-stdin'
             }
         }
 
@@ -49,4 +55,10 @@ pipeline {
             }
         }
     }
+
+    post {
+		  always {
+			  sh 'docker logout'
+		  }
+	  }
 }
