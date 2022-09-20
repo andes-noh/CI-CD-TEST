@@ -4,7 +4,7 @@ pipeline {
     environment {
         GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
         dockerHubRegistry = 'andesnoh/sample'
-        dockerHubRegistryCredential = credential('dockerhub')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins')
     }
 
     tools {
@@ -26,7 +26,7 @@ pipeline {
 
         stage('login'){
             steps {
-              sh "echo $dockerHubRegistryCredential_PSW | docker login -u $dockerHubRegistryCredential_USR --password-stdin"
+              sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
 
