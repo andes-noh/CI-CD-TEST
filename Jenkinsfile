@@ -20,7 +20,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "docker build -t ${dockerHubRegistry}:latest"
+                sh "docker build -t ${dockerHubRegistry}:latest ."
             }
         }
 
