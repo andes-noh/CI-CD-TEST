@@ -33,9 +33,7 @@ pipeline {
         stage('Push') {
             steps {
               script {
-                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
                   sh "docker push ${dockerHubRegistry}:latest"
-
                   sleep 10
               }
             }
