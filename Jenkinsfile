@@ -57,7 +57,7 @@ pipeline {
 
         stage('Deploy to kubernetes'){
           steps {
-            kubernetesDeploy config: "testk8s.yaml", kubeconfigId: "kubeconfig"
+            kubernetesDeploy configs: "testk8s.yaml", kubeconfigId: "kubeconfig"
             sh "/usr/local/bin/kubectl --kubeconfig=/home/test.yaml rollout restart deployment/test-deployment -n zuno"
           }
 
