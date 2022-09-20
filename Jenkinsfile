@@ -8,7 +8,7 @@ pipeline {
     }
 
     tools {
-        nodejs "NodeJS"
+        nodejs "NODE_JS"
     }
 
     stages {
@@ -26,10 +26,12 @@ pipeline {
 
         stage('Push') {
             steps {
-              docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
-                sh "docker push ${dockerHubRegistry}:latest"
+              script {
+                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
+                  sh "docker push ${dockerHubRegistry}:latest"
 
-                sleep 10
+                  sleep 10
+              }
             }
         }
 
