@@ -56,20 +56,24 @@ pipeline {
         }
 
         stage('Deploy to kubernetes'){
-            steps{
-              script{
-                kubernetesDeploy(configs: "test.yaml", kubeconfigId: "kubeconfig")
-            }
+          steps {
+            kubernetesDeploy config: "testk8s.yaml", kubeconfigId: "kubeconfig"
+            sh "/usr/local/bin/kubectl --kubeconfig=/home/test.yaml rollout restart deployment/test-deployment -n zuno"
+          }
+
+            // steps {
+            //   script{
+            //     kubernetesDeploy(configs: "test.yaml", kubeconfigId: "kubeconfig")
+            //   }
+            // }
         }
+
+
     }
-
-
         // docker run
         // stage('Docker Run'){
         //     steps {
         //         sh "docker run -d -p 3000:3000 --rm --name MySampleApp ${dockerHubRegistry}:latest"
         //     }
         // }
-    }
-
 }
