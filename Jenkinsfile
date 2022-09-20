@@ -52,13 +52,9 @@ pipeline {
        stage('Finish') {
             steps{
                 sh "echo 'The end'"
+                sh "docker logout"
             }
         }
     }
 
-    post {
-		  always {
-			  sh 'docker logout'
-		  }
-	  }
 }
