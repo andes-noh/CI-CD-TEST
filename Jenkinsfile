@@ -5,11 +5,10 @@ pipeline {
         GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
         dockerHubRegistry = 'andesnoh/sample'
         dockerHubRegistryCredential = 'dockerhub'
-        dockerImage = ''
     }
 
     tools {
-        nodejs "NODE_JS"
+        nodejs "NodeJS"
     }
 
     stages {
@@ -21,20 +20,26 @@ pipeline {
 
         stage('Build') {
             steps {
-              scripts {
-                dockerImage = docker.build("${dockerHubRegistry}")
-              }
+                sh "docker build -t ${dockerHubRegistry}:latest"
             }
         }
 
         stage('Push') {
             steps {
-              scripts {
-                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
-                dockerImage.push('latest')
-              }
+              docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
+                sh "docker push ${dockerHubRegistry}:latest"
+
+                sleep 10
             }
         }
+
+        // stage('Kubernetes Deploy') {
+        //     steps{
+        //       script{
+        //         kubernetesDeploy(configs: "jenkins_deploy.yaml", kubeconfigId: "KubeConfig")
+        //       }
+        //     }
+        // }
 
        stage('Finish') {
             steps{
