@@ -1,85 +1,106 @@
-def label = "test-${UUID.randomUUID().toString()}"
+pipeline {
+    agent any
 
+    environment {
+        GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
+        dockerHubRegistry = 'andesnoh/sample'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins')
+        namespace='jenkins'
+        selector_key='app.kubernetes.io/name'
+        selector_val='test'
+        deployment='test.deployment.yaml'
+        service='test.service.yaml'
+    }
 
-podTemplate(
-	label: label,
-	containers: [
-		//container image는 docker search 명령 이용
-		containerTemplate(name: "docker", image: "docker:latest", ttyEnabled: true, command: "cat"),
-		containerTemplate(name: "kubectl", image: "lachlanevenson/k8s-kubectl", command: "cat", ttyEnabled: true)
-	],
-	//volume mount
-	volumes: [
-		hostPathVolume(hostPath: "/var/run/docker.sock", mountPath: "/var/run/docker.sock")
-	]
-)
-{
-	node(label) {
-		stage("Get Source") {
-			//git url:"https://github.com/happykube/hellonode.git", branch: "main", credentialsId: "git_credential"
-		    git branch: 'main', url: 'https://github.com/andes-noh/CI-CD-TEST.git'
+    tools {
+        nodejs "NODE_JS"
+    }
+
+    stages {
+        stage('Pull') {
+            steps {
+                git url: "${GIT_URL}", branch: "main", poll: true, changelog: true
+            }
         }
 
-		// // -- 환경변수 파일 읽어서 변수값 셋팅
-		// def props = readProperties  file:"deployment/pipeline.properties"
-		// def tag = props["version"]
-		// def dockerRegistry = props["dockerRegistry"]
-		// def credential_registry=props["credential_registry"]
-		// def image = props["image"]
-		// def deployment = props["deployment"]
-		// def service = props["service"]
-		// def ingress = props["ingress"]
-		// def selector_key = props["selector_key"]
-		// def selector_val = props["selector_val"]
-		// def namespace = props["namespace"]
+        stage('Build') {
+            steps {
+                sh "docker build -t ${dockerHubRegistry}:latest ."
+            }
+        }
 
-    def GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
-    def dockerHubRegistry = 'andesnoh/sample'
-    def DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins')
-    def namespace='jenkins'
-    def selector_key='app.kubernetes.io/name'
-    def selector_val='test'
-    def deployment='test.deployment.yaml'
-    def service='test.service.yaml'
+        stage('login'){
+            steps {
+              sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
 
-		try {
-      stage('Build') {
-          steps {
-              sh "docker build -t ${dockerHubRegistry}:latest ."
-          }
-      }
+        stage('Push') {
+            steps {
+              script {
+                  sh "docker push ${dockerHubRegistry}:latest"
+                  sleep 10
+              }
+            }
+        }
 
-      stage('login'){
-          steps {
-            sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-          }
-      }
+        // stage('Kubernetes Deploy') {
+        //     steps{
+        //       script{
+        //         kubernetesDeploy(configs: "jenkins_deploy.yaml", kubeconfigId: "KubeConfig")
+        //       }
+        //     }
+        // }
 
-      stage('Push') {
+        stage('Clean') {
+            steps {
+                sh "echo 'The end'"
+                sh "docker rmi ${dockerHubRegistry}:latest"
+                sh "docker logout"
+            }
+        }
+
+        stage( "Clean Up Existing Deployments" ) {
           steps {
             script {
-                sh "docker push ${dockerHubRegistry}:latest"
-                sleep 10
+    					sh "kubectl delete deployments -n ${namespace} --selector=${selector_key}=${selector_val}"
             }
           }
-      }
-
-			stage( "Clean Up Existing Deployments" ) {
-				container("kubectl") {
-					sh "kubectl delete deployments -n ${namespace} --selector=${selector_key}=${selector_val}"
 				}
-			}
 
-			stage( "Deploy to Cluster" ) {
-				container("kubectl") {
-					sh "kubectl apply -n ${namespace} -f ${deployment}"
-					sh "sleep 5"
-					sh "kubectl apply -n ${namespace} -f ${service}"
+
+			  stage( "Deploy to Cluster" ) {
+            steps {
+              script {
+                sh "kubectl apply -n ${namespace} -f ${deployment}"
+					      sh "sleep 5"
+					      sh "kubectl apply -n ${namespace} -f ${service}"
+            }
+          }
 				}
-			}
 
-		} catch(e) {
-			currentBuild.result = "FAILED"
-		}
-	}
+
+        // stage('Deploy to kubernetes'){
+        //   steps {
+        //     script {
+        //       kubernetesDeploy (configs: 'test.k8s.yaml', kubeconfigId: 'kubeconfig')
+        //       sh "/usr/local/bin/kubectl --kubeconfig=/home/test.yaml rollout restart deployment/test-deployment -n zuno"
+        //     }
+        //   }
+
+            // steps {
+            //   script{
+            //     kubernetesDeploy(configs: "test.yaml", kubeconfigId: "kubeconfig")
+            //   }
+            // }
+        }
+
+
+    }
+        // docker run
+        // stage('Docker Run'){
+        //     steps {
+        //         sh "docker run -d -p 3000:3000 --rm --name MySampleApp ${dockerHubRegistry}:latest"
+        //     }
+        // }
 }
