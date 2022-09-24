@@ -78,8 +78,6 @@ pipeline {
             }
           }
 				}
-
-
         // stage('Deploy to kubernetes'){
         //   steps {
         //     script {
@@ -88,19 +86,17 @@ pipeline {
         //     }
         //   }
 
-            // steps {
-            //   script{
-            //     kubernetesDeploy(configs: "test.yaml", kubeconfigId: "kubeconfig")
-            //   }
-            // }
-        }
+        // steps {
+        //   script{
+        //     kubernetesDeploy(configs: "test.yaml", kubeconfigId: "kubeconfig")
+        //   }
+        // }
 
-
-    }
         // docker run
         // stage('Docker Run'){
         //     steps {
         //         sh "docker run -d -p 3000:3000 --rm --name MySampleApp ${dockerHubRegistry}:latest"
         //     }
         // }
+    }
 }
