@@ -56,6 +56,10 @@ jobs:
       # - name: Push to GitHub Packages
       #   uses: docker/build-push-action@v2
       #   with:
+      #     # default git context
+      #     context: .
+      #     # default {context}/Dockerfile
+      #     file: ./Dockerfile
       #     push: true
       #     tags: |
       #       ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
