@@ -11,6 +11,10 @@
 
 - /.github/workflows/workflow.yml
 
+## docker hub
+
+- andesnoh/cicd_test
+
 ## argoCD
 
 - (test-kustomize)[https://github.com/andes-noh/test-kustomize]
