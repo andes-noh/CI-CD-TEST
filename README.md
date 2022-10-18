@@ -3,6 +3,18 @@
 - yarn upgrade ts-node-dev@latest ts-node@latest 버전 업그레이드
 - nestjs standalone application
 
+## kubernetes
+
+- k3s
+
+## github actions
+
+- /.github/workflows/workflow.yml
+
+## argoCD
+
+- (test-kustomize)[https://github.com/andes-noh/test-kustomize]
+
 ## jenkins 관련
 
 - Jenkinsfile
