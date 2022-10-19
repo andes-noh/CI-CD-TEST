@@ -3,13 +3,12 @@ pipeline {
 
     environment {
         GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
-        dockerHubRegistry = 'andesnoh/sample'
+        dockerHubRegistry = 'andesnoh/cicd_test'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins')
         namespace='jenkins'
         selector_key='app.kubernetes.io/name'
         selector_val='test'
-        deployment='test.deployment.yaml'
-        service='test.service.yaml'
+        manifest='test.k8s.yaml'
     }
 
     tools {
@@ -25,7 +24,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "docker build -t ${dockerHubRegistry}:latest ."
+                sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
             }
         }
 
@@ -38,7 +37,7 @@ pipeline {
         stage('Push') {
             steps {
               script {
-                  sh "docker push ${dockerHubRegistry}:latest"
+                  sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
                   sleep 10
               }
             }
@@ -55,7 +54,7 @@ pipeline {
         stage('Clean') {
             steps {
                 sh "echo 'The end'"
-                sh "docker rmi ${dockerHubRegistry}:latest"
+                sh "docker rmi ${dockerHubRegistry}:${env.BUILD_NUMBER}"
                 sh "docker logout"
             }
         }
@@ -68,13 +67,14 @@ pipeline {
           }
 				}
 
-
 			  stage( "Deploy to Cluster" ) {
             steps {
               script {
-                sh "kubectl apply -n ${namespace} -f ${deployment}"
+                sh "sed 's/IMAGE_VERSION/${env.BUILD_NUMBER}/g' ${manifest} > output.yaml"
+                sh "kubectl apply -n ${namespace} -f ${output.yaml}"
 					      sh "sleep 5"
 					      sh "kubectl apply -n ${namespace} -f ${service}"
+                sh "rm -rf output.yaml"
             }
           }
 				}

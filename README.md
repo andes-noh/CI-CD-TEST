@@ -29,6 +29,10 @@
 - test.deployment.yaml
 - test.service.yaml
 
+```
+sudo chmod 655 /etc/rancher/k3s.yaml
+```
+
 ## jenkins flow
 
 - github webhook 인식
