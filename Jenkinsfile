@@ -54,7 +54,7 @@ pipeline {
         stage('Clean') {
             steps {
                 sh "echo 'The end'"
-                sh "docker rmi $(docker images -f "dangling=true" -q)"
+                sh """docker rmi $(docker images -f 'dangling=true' -q)"""
                 sh "docker rmi ${dockerHubRegistry}:${env.BUILD_NUMBER}"
                 sh "docker logout"
             }
@@ -72,7 +72,7 @@ pipeline {
             steps {
               script {
                 sh "pwd"
-                sh "sed 's/IMAGE_VERSION/${env.BUILD_NUMBER}/g' ${manifest}>output.yaml"
+                sh "sed "s/IMAGE_VERSION/${env.BUILD_NUMBER}/g" ${manifest}>output.yaml"
                 sh "kubectl apply -n ${namespace} -f ${output.yaml}"
 					      sh "sleep 5"
 					      sh "kubectl apply -n ${namespace} -f ${service}"
