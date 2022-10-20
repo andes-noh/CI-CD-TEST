@@ -75,7 +75,7 @@ pipeline {
                 sh "ls -al"
                 sh "chmod +x manage.sh"
                 // sh '''sed "s/IMAGE_VERSION/\${env.BUILD_NUMBER}\"/g" test.deployment.yaml > output.yaml'''
-                sh "manage.sh ${env.BUILD_NUMBER} ${manifest}"
+                sh "./manage.sh ${env.BUILD_NUMBER} ${manifest}"
                 sh "kubectl apply -n ${namespace} -f ${output.yaml}"
 					      sh "sleep 5"
 					      sh "kubectl apply -n ${namespace} -f ${service}"
