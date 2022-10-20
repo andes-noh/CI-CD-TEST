@@ -70,6 +70,7 @@ pipeline {
 			  stage( "Deploy to Cluster" ) {
             steps {
               script {
+                sh "pwd"
                 sh "sed 's/IMAGE_VERSION/${env.BUILD_NUMBER}/g' ${manifest}>output.yaml"
                 sh "kubectl apply -n ${namespace} -f ${output.yaml}"
 					      sh "sleep 5"
