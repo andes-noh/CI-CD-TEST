@@ -70,18 +70,20 @@ pipeline {
 
 			  stage( "Deploy to Cluster" ) {
           steps {
+            script {
               sh "pwd"
               sh "ls -al"
               sh "chmod +x manage.sh"
               sh "ls -al"
               sh "sed"
-              sh '''sed 's/IMAGE_VERSION/25/g' test.deployment.yaml > output.yaml'''
+              sh '''sed -i 's/IMAGE_VERSION/25/g' test.deployment.yaml > output.yaml'''
               // sh "bash manage.sh ${env.BUILD_NUMBER}"
               sh "kubectl apply -n ${namespace} -f ${output.yaml}"
 				      sh "sleep 5"
 				      sh "kubectl apply -n ${namespace} -f ${service}"
               sh "rm -rf output.yaml"
             }
+          }
 				}
         // stage('Deploy to kubernetes'){
         //   steps {
