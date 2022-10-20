@@ -54,6 +54,7 @@ pipeline {
         stage('Clean') {
             steps {
                 sh "echo 'The end'"
+                sh "docker rmi $(docker images -f "dangling=true" -q)"
                 sh "docker rmi ${dockerHubRegistry}:${env.BUILD_NUMBER}"
                 sh "docker logout"
             }
