@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sed "s/IMAGE_VERSION/$1/g" $2 > out.yaml
+sed "s/IMAGE_VERSION/$1/g" test.deployment.yaml > out.yaml
