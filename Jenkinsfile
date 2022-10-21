@@ -77,14 +77,14 @@ pipeline {
               // sh "ls -al"
               // sh "sed -i s\"/\"IMAGE_VERSION\"/\"${env.BUILD_NUMBER}\"/\"g test.k8s.yaml"
               sh """#!/bin/bash
-                cat ${manifest} | grep version
-                sed -i 's|version: .*|version: "${env.BUILD_NUMBER}"|' ${manifest}
-                cat ${manifest} | grep version
+                cat ${manifest} | grep image
+                sed -i 's|image: .*|image: "${dockerHubRegistry}:${env.BUILD_NUMBER}"|' ${manifest}
+                cat ${manifest} | grep image
                 """
               sh "kubectl apply -n ${namespace} -f ${manifest}"
 				      sh "sleep 5"
 				      // sh "kubectl apply -n ${namespace} -f ${service}"
-              sh "rm -rf output.yaml"
+              // sh "rm -rf output.yaml"
             }
           }
 				}
