@@ -49,7 +49,7 @@ pipeline {
 
         stage('build and push') {
           steps {
-            sh "docker buildx build --platform linux/arm64/v8,linux/amd64 -t ${dockerHubRegistry}:${env.BUILD_NUMBER} --push ."
+            sh "docker buildx build --platform linux/arm64,linux/amd64 -t ${dockerHubRegistry}:${env.BUILD_NUMBER} --push ."
           }
         }
 
