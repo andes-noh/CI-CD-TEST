@@ -73,12 +73,17 @@ pipeline {
             script {
               sh "pwd"
               sh "ls -al"
-              sh "chmod +x manage.sh"
-              sh "ls -al"
-              sh "sed -i s\"/\"IMAGE_VERSION\"/\"${env.BUILD_NUMBER}\"/\"g test.k8s.yaml"
-              sh "kubectl apply -n ${namespace} -f ${output.yaml}"
+              // sh "chmod +x manage.sh"
+              // sh "ls -al"
+              // sh "sed -i s\"/\"IMAGE_VERSION\"/\"${env.BUILD_NUMBER}\"/\"g test.k8s.yaml"
+              sh """#!/bin/bash
+                cat ${manifest} | grep version
+                sed -i 's|version: .*|version: "${env.BUILD_NUMBER}"|' ${manifest}
+                cat ${manifest} | grep version
+                """
+              sh "kubectl apply -n ${namespace} -f ${manifest}"
 				      sh "sleep 5"
-				      sh "kubectl apply -n ${namespace} -f ${service}"
+				      // sh "kubectl apply -n ${namespace} -f ${service}"
               sh "rm -rf output.yaml"
             }
           }

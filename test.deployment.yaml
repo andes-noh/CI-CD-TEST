@@ -21,7 +21,7 @@ spec:
         app.kubernetes.io/part-of: test
     spec:
       containers:
-        - image: andesnoh/cicd_test:IMAGE_VERSION
+        - image: andesnoh/cicd_test:version
           name: app
           ports:
             - containerPort: 3000
