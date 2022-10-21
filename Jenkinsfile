@@ -22,25 +22,35 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
-            }
-        }
-
         stage('login'){
             steps {
               sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
 
-        stage('Push') {
-            steps {
-              script {
-                  sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
-                  sleep 10
-              }
-            }
+
+
+
+        // stage('Build') {
+        //     steps {
+        //         sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
+        //     }
+        // }
+
+
+        // stage('Push') {
+        //     steps {
+        //       script {
+        //           sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
+        //           sleep 10
+        //       }
+        //     }
+        // }
+
+        stage('build and push') {
+          steps {
+            sh "docker buildx build --platform linux/arm64/v8,linux/amd64 -t ${dockerHubRegistry}:${env.BUILD_NUMBER} --push ."
+          }
         }
 
         // stage('Kubernetes Deploy') {
