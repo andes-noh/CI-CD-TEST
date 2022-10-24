@@ -28,31 +28,34 @@ pipeline {
             }
         }
 
-        stage('login'){
-            steps {
-              // // docker hub login
-              // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-            }
-        }
+        // // docker hub login
+        // stage('login'){
+        //     steps {
+
+        //       // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+        //     }
+        // }
 
         stage('Build') {
             steps {
-              // Docker Build
-              docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}") {
-                image = docker.build("${ECR_PATH}/${ECR_IMAGE}", "--network=host --no-cache .")
+              script {
+                // Docker Build
+                docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}") {
+                  image = docker.build("${ECR_PATH}/${ECR_IMAGE}", "--network=host --no-cache .")
+                }
               }
-
               // sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
             }
         }
 
         stage('Push') {
             steps {
-              // push to ecr
-              docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}"){
-                image.push("v${env.BUILD_NUMBER}")
+              script {
+                // push to ecr
+                docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}") {
+                  image.push("v${env.BUILD_NUMBER}")
+                }
               }
-
               // script {
               //     sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
               //     sleep 10
