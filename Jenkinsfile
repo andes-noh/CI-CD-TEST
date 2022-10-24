@@ -5,6 +5,12 @@ pipeline {
         GIT_URL = "https://github.com/andes-noh/CI-CD-TEST.git"
         dockerHubRegistry = 'andesnoh/cicd_test'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins')
+        // ==================== aws 관련 env ====================
+        ECR_PATH='942083365966.dkr.ecr.us-east-1.amazonaws.com'
+        ECR_IMAGE='cicd_test'
+        AWS_CREDENTIALS = credentials('andes-aws')
+        REGION ='ap-northeast-2'
+        // ======================================================
         namespace='jenkins'
         selector_key='app.kubernetes.io/name'
         selector_val='test'
@@ -24,22 +30,33 @@ pipeline {
 
         stage('login'){
             steps {
-              sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+              // // docker hub login
+              // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
 
         stage('Build') {
             steps {
-                sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
+              // Docker Build
+              docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}") {
+                image = docker.build("${ECR_PATH}/${ECR_IMAGE}", "--network=host --no-cache .")
+              }
+
+              // sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
             }
         }
 
         stage('Push') {
             steps {
-              script {
-                  sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
-                  sleep 10
+              // push to ecr
+              docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}"){
+                image.push("v${env.BUILD_NUMBER}")
               }
+
+              // script {
+              //     sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
+              //     sleep 10
+              // }
             }
         }
 
@@ -52,20 +69,14 @@ pipeline {
         //   }
         // }
 
-        // stage('Kubernetes Deploy') {
-        //     steps{
-        //       script{
-        //         kubernetesDeploy(configs: "jenkins_deploy.yaml", kubeconfigId: "KubeConfig")
-        //       }
-        //     }
-        // }
-
         stage('Clean') {
             steps {
                 sh "echo 'The end'"
                 sh '''docker rmi $(docker images -f 'dangling=true' -q)'''
-                sh "docker rmi ${dockerHubRegistry}:${env.BUILD_NUMBER}"
-                sh "docker logout"
+                sh "docker rmi ${ECR_PATH}/${ECR_IMAGE}:${env.BUILD_NUMBER}"
+                sh "docker rmi ${ECR_PATH}/${ECR_IMAGE}:latest"
+                // sh "docker rmi ${dockerHubRegistry}:${env.BUILD_NUMBER}"
+                // sh "docker logout"
             }
         }
 
@@ -82,35 +93,17 @@ pipeline {
             script {
               sh "pwd"
               sh "ls -al"
-              // sh "chmod +x manage.sh"
-              // sh "ls -al"
-              // sh "sed -i s\"/\"IMAGE_VERSION\"/\"${env.BUILD_NUMBER}\"/\"g test.k8s.yaml"
               sh """#!/bin/bash
                 cat ${manifest} | grep image
-                sed -i 's|image: .*|image: "${dockerHubRegistry}:${env.BUILD_NUMBER}"|' ${manifest}
+                sed -i 's|image: .*|image: "${ECR_PATH}/${ECR_IMAGE}:${env.BUILD_NUMBER}"|' ${manifest}
                 cat ${manifest} | grep image
                 """
               sh "kubectl apply -n ${namespace} -f ${manifest}"
 				      sh "sleep 5"
-				      // sh "kubectl apply -n ${namespace} -f ${service}"
-              // sh "rm -rf output.yaml"
+
             }
           }
 				}
-        // stage('Deploy to kubernetes'){
-        //   steps {
-        //     script {
-        //       kubernetesDeploy (configs: 'test.k8s.yaml', kubeconfigId: 'kubeconfig')
-        //       sh "/usr/local/bin/kubectl --kubeconfig=/home/test.yaml rollout restart deployment/test-deployment -n zuno"
-        //     }
-        //   }
-
-        // steps {
-        //   script{
-        //     kubernetesDeploy(configs: "test.yaml", kubeconfigId: "kubeconfig")
-        //   }
-        // }
-
         // docker run
         // stage('Docker Run'){
         //     steps {

@@ -22,7 +22,7 @@ spec:
         app.kubernetes.io/part-of: test
     spec:
       containers:
-        - image: andesnoh/cicd_test:version
+        - image: 942083365966.dkr.ecr.us-east-1.amazonaws.com/cicd_test:latest
           name: app
           ports:
             - containerPort: 3000
