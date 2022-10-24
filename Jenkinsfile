@@ -8,7 +8,7 @@ pipeline {
         // ==================== aws 관련 env ====================
         ECR_PATH='942083365966.dkr.ecr.us-east-1.amazonaws.com'
         ECR_IMAGE='cicd_test'
-        AWS_CREDENTIALS = credentials('andes-aws')
+        AWS_CREDENTIALS = credentials('aws_credential')
         REGION ='ap-northeast-2'
         // ======================================================
         namespace='jenkins'
