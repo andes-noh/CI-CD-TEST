@@ -28,33 +28,29 @@ pipeline {
             }
         }
 
-
-
-
-        // stage('Build') {
-        //     steps {
-        //         sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
-        //     }
-        // }
-
-
-        // stage('Push') {
-        //     steps {
-        //       script {
-        //           sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
-        //           sleep 10
-        //       }
-        //     }
-        // }
-
-        stage('build and push') {
-          steps {
-            script {
-              sh "docker buildx build --platform linux/amd64 -t ${dockerHubRegistry}:${env.BUILD_NUMBER} --push ."
-              // sh "docker buildx --builder demo-builder-arm64 build --platform=linux/arm64 -t ${dockerHubRegistry}:${env.BUILD_NUMBER} --push ."
+        stage('Build') {
+            steps {
+                sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
             }
-          }
         }
+
+        stage('Push') {
+            steps {
+              script {
+                  sh "docker push ${dockerHubRegistry}:${env.BUILD_NUMBER}"
+                  sleep 10
+              }
+            }
+        }
+
+        // stage('build and push') {
+        //   steps {
+        //     script {
+        //       sh "docker buildx build --platform linux/amd64 -t ${dockerHubRegistry}:${env.BUILD_NUMBER} --push ."
+        //       // sh "docker buildx --builder demo-builder-arm64 build --platform=linux/arm64 -t ${dockerHubRegistry}:${env.BUILD_NUMBER} --push ."
+        //     }
+        //   }
+        // }
 
         // stage('Kubernetes Deploy') {
         //     steps{
