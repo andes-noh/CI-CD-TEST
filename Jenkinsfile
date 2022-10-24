@@ -6,7 +6,7 @@ pipeline {
         dockerHubRegistry = 'andesnoh/cicd_test'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins')
         // ==================== aws 관련 env ====================
-        ECR_PATH='942083365966.dkr.ecr.us-east-1.amazonaws.com'
+        ECR_PATH='942083365966.dkr.ecr.ap-northeast-2.amazonaws.com'
         ECR_IMAGE='cicd_test'
         AWS_CREDENTIALS = 'aws_credential'
         REGION ='ap-northeast-2'
@@ -53,7 +53,8 @@ pipeline {
               script {
                 // push to ecr
                 docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}") {
-                  image.push("v${env.BUILD_NUMBER}")
+                  image.push("${env.BUILD_NUMBER}")
+                  image.push("latest")
                 }
               }
               // script {
