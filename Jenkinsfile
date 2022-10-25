@@ -76,7 +76,7 @@ pipeline {
         stage('Clean') {
             steps {
                 sh "echo 'The end'"
-                sh '''docker rmi $(docker images -f 'dangling=true' -q)'''
+                // sh '''docker rmi $(docker images -f 'dangling=true' -q)'''
                 sh "docker rmi ${ECR_PATH}/${ECR_IMAGE}:${env.BUILD_NUMBER}"
                 sh "docker rmi ${ECR_PATH}/${ECR_IMAGE}:latest"
                 // sh "docker rmi ${dockerHubRegistry}:${env.BUILD_NUMBER}"
