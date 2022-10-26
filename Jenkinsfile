@@ -109,12 +109,13 @@ pipeline {
 				}
 
         stage( "Full Clean" ) {
-          step {
+          steps {
             script {
               sh '''docker rmi $(docker images -f "dangling=true" -q)'''
             }
           }
         }
+
         // docker run
         // stage('Docker Run'){
         //     steps {
