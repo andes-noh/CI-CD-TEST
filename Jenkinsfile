@@ -104,10 +104,17 @@ pipeline {
                 """
               sh "kubectl apply -n ${namespace} -f ${manifest}"
 				      sh "sleep 5"
-
             }
           }
 				}
+
+        stage( "Full Clean" ) {
+          step {
+            script {
+              sh '''docker rmi $(docker images -f "dangling=true" -q)'''
+            }
+          }
+        }
         // docker run
         // stage('Docker Run'){
         //     steps {
