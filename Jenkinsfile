@@ -41,7 +41,8 @@ pipeline {
               script {
                 // Docker Build
                 docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIALS}") {
-                  image = docker.build("${ECR_PATH}/${ECR_IMAGE}", "--network=host --no-cache .")
+                  // image = docker.build("${ECR_PATH}/${ECR_IMAGE}", "--network=host --no-cache .")
+                  image = docker.build("${ECR_PATH}/${ECR_IMAGE}")
                 }
               }
               // sh "docker build -t ${dockerHubRegistry}:${env.BUILD_NUMBER} ."
