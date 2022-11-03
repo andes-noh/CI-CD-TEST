@@ -6,8 +6,8 @@ pipeline {
         dockerHubRegistry = 'andesnoh/cicd_test'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-jenkins')
         // ==================== aws 관련 env ====================
-        ECR_PATH='942083365966.dkr.ecr.ap-northeast-2.amazonaws.com'
-        ECR_IMAGE='cicd_test'
+        ECR_PATH='361848949410.dkr.ecr.ap-northeast-2.amazonaws.com'
+        ECR_IMAGE='cicd_demo'
         AWS_CREDENTIALS = 'aws_credential'
         REGION ='ap-northeast-2'
         // ======================================================
